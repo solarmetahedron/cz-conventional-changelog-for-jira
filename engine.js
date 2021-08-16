@@ -31,8 +31,14 @@ module.exports = function(options) {
   var getFromOptionsOrDefaults = function(key) {
     return options[key] || defaults[key];
   };
-  var getJiraIssueLocation = function(location, type, scope, jiraWithDecorators, subject) {
-    switch(location) {
+  var getJiraIssueLocation = function(
+    location,
+    type,
+    scope,
+    jiraWithDecorators,
+    subject
+  ) {
+    switch (location) {
       case 'pre-type':
         return jiraWithDecorators + type + scope + ': ' + subject;
         break;
@@ -46,6 +52,18 @@ module.exports = function(options) {
         return type + scope + ': ' + jiraWithDecorators + subject;
     }
   };
+
+  var getJiraIssuePrependAppendDecorators = function(answers) {
+    // Get Jira issue prepend and append decorators
+    var prepend = options.jiraPrepend || '';
+    var append = options.jiraAppend || '';
+    var jiraWithDecorators = answers.jira
+      ? prepend + answers.jira + append + ' '
+      : '';
+
+    return jiraWithDecorators;
+  };
+
   var types = getFromOptionsOrDefaults('types');
 
   var length = longest(Object.keys(types)).length + 1;
@@ -140,14 +158,21 @@ module.exports = function(options) {
           default: options.defaultSubject,
           maxLength: maxHeaderWidth,
           leadingLabel: answers => {
-            const jira = answers.jira ? ` ${answers.jira}` : '';
-            let scope = '';
+            var scope = answers.scope ? '(' + answers.scope + ')' : '';
 
-            if (answers.scope && answers.scope !== 'none') {
-              scope = `(${answers.scope})`;
-            }
+            var jiraWithDecorators = getJiraIssuePrependAppendDecorators(
+              answers
+            );
 
-            return `${answers.type}${scope}:${jira}`;
+            const head = getJiraIssueLocation(
+              options.jiraLocation,
+              answers.type,
+              scope,
+              jiraWithDecorators,
+              ''
+            );
+
+            return `${head}`;
           },
           validate: input =>
             input.length >= minHeaderWidth ||
@@ -172,7 +197,8 @@ module.exports = function(options) {
         {
           type: 'confirm',
           name: 'isBreaking',
-          message: 'You do know that this will bump the major version, are you sure?',
+          message:
+            'You do know that this will bump the major version, are you sure?',
           default: false,
           when: function(answers) {
             return answers.isBreaking;
@@ -227,13 +253,16 @@ module.exports = function(options) {
         // parentheses are only needed when a scope is present
         var scope = answers.scope ? '(' + answers.scope + ')' : '';
 
-        // Get Jira issue prepend and append decorators
-        var prepend = options.jiraPrepend || ''
-        var append = options.jiraAppend || ''
-        var jiraWithDecorators = answers.jira ? prepend + answers.jira + append + ' ': '';
+        var jiraWithDecorators = getJiraIssuePrependAppendDecorators(answers);
 
         // Hard limit this line in the validate
-        const head = getJiraIssueLocation(options.jiraLocation, answers.type, scope, jiraWithDecorators, answers.subject);
+        const head = getJiraIssueLocation(
+          options.jiraLocation,
+          answers.type,
+          scope,
+          jiraWithDecorators,
+          answers.subject
+        );
 
         // Wrap these lines at options.maxLineWidth characters
         var body = answers.body ? wrap(answers.body, wrapOptions) : false;
