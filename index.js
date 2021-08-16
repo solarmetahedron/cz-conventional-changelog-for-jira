@@ -64,7 +64,12 @@ const options = {
     process.env.CZ_JIRA_PREPEND || config.jiraPrepend || defaults.jiraPrepend,
   jiraAppend:
     process.env.CZ_JIRA_APPEND || config.jiraAppend || defaults.jiraAppend,
-  jiraRegex: process.env.CZ_JIRA_REGEX || config.jiraRegex || defaults.jiraRegex
+  jiraRegex:
+    process.env.CZ_JIRA_REGEX || config.jiraRegex || defaults.jiraRegex,
+  jiraNoIssueLabel:
+    process.env.CZ_JIRA_NO_ISSUE_LABEL ||
+    config.jiraNoIssueLabel ||
+    defaults.jiraNoIssueLabel
 };
 
 (function(options) {
