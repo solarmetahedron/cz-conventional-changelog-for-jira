@@ -11,5 +11,6 @@ module.exports = {
   jiraOptional: false,
   jiraLocation: 'pre-description',
   jiraPrepend: '',
-  jiraAppend: ''
+  jiraAppend: '',
+  jiraRegex: '^(?<!([A-Z0-9]{1,10})-?)[A-Z0-9]+-\\d+$'
 };

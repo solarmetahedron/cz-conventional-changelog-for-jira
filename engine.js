@@ -78,7 +78,13 @@ module.exports = function(options) {
   const maxHeaderWidth = getFromOptionsOrDefaults('maxHeaderWidth');
 
   const branchName = branch.sync() || '';
-  const jiraIssueRegex = /(?<jiraIssue>(?<!([A-Z0-9]{1,10})-?)[A-Z0-9]+-\d+)/;
+  const jiraIssueRegexValue = options.jiraRegex.substring(
+    options.jiraRegex.indexOf('^'),
+    options.jiraRegex.indexOf('$')
+  );
+  const jiraIssueRegex = new RegExp(
+    '(?<jiraIssue>' + jiraIssueRegexValue + ')'
+  );
   const matchResult = branchName.match(jiraIssueRegex);
   const jiraIssue =
     matchResult && matchResult.groups && matchResult.groups.jiraIssue;
@@ -129,13 +135,12 @@ module.exports = function(options) {
           when: options.jiraMode,
           default: jiraIssue || '',
           validate: function(jira) {
-            return (
-              (options.jiraOptional && !jira) ||
-              /^(?<!([A-Z0-9]{1,10})-?)[A-Z0-9]+-\d+$/.test(jira)
-            );
+            const regex = new RegExp(options.jiraRegex);
+
+            return (options.jiraOptional && !jira) || regex.test(jira);
           },
           filter: function(jira) {
-            return jira.toUpperCase();
+            return jira !== 'no-issue' ? jira.toUpperCase() : jira;
           }
         },
         {
