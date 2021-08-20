@@ -130,8 +130,8 @@ module.exports = function(options) {
             'Enter JIRA issue (' +
             getFromOptionsOrDefaults('jiraPrefix') +
             '-12345)' +
-            (options.jiraNoIssueLabel !== ''
-              ? " or '" + options.jiraNoIssueLabel + "'"
+            (options.jiraPlaceholderLabel !== ''
+              ? " or '" + options.jiraPlaceholderLabel + "'"
               : '') +
             (options.jiraOptional ? ' (optional)' : '') +
             ':',
@@ -143,7 +143,9 @@ module.exports = function(options) {
             return (options.jiraOptional && !jira) || regex.test(jira);
           },
           filter: function(jira) {
-            return jira !== 'no-issue' ? jira.toUpperCase() : jira;
+            return jira !== options.jiraPlaceholderLabel
+              ? jira.toUpperCase()
+              : jira;
           }
         },
         {

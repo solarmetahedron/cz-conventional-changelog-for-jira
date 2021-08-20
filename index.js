@@ -66,10 +66,10 @@ const options = {
     process.env.CZ_JIRA_APPEND || config.jiraAppend || defaults.jiraAppend,
   jiraRegex:
     process.env.CZ_JIRA_REGEX || config.jiraRegex || defaults.jiraRegex,
-  jiraNoIssueLabel:
-    process.env.CZ_JIRA_NO_ISSUE_LABEL ||
-    config.jiraNoIssueLabel ||
-    defaults.jiraNoIssueLabel
+  jiraPlaceholderLabel:
+    process.env.CZ_JIRA_PLACEHOLDER_LABEL ||
+    config.jiraPlaceholderLabel ||
+    defaults.jiraPlaceholderLabel
 };
 
 (function(options) {
